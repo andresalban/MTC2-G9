@@ -2,14 +2,15 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        //Scanner sc = new Scanner(System.in);
-        String s1 = "abcdef";
-        System.out.println(s1);
-        String s2 = s1 + "ghij"; // s2 contiene "abcdefghij"
-        System.out.println(s2);
-        String s3 = s1 + s2 + "klm";
-        System.out.println(s3);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese un numero entero: ");
+        var numero = sc.nextInt();
+        System.out.println(par_impar(numero));
 
-        
-    }   
+    }
+
+    public static String par_impar(int num) {
+
+        return (num % 2 == 0 ? num + " Es par" : num + " Es impar");
+    }
 }
