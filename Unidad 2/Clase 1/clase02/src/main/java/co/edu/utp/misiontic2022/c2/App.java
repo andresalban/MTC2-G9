@@ -11,8 +11,8 @@ public class App {
         MiPrimerClase mpc = new MiPrimerClase();
 
         System.out.println("Valor del contador: " + mpc.getContador());
+        
         mpc.setContador(10);
-
         System.out.println("Valor del contador: " + mpc.getContador());
 
 
