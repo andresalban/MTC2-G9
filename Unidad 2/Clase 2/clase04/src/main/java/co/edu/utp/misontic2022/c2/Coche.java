@@ -1,30 +1,25 @@
 package co.edu.utp.misontic2022.c2;
 
+import co.edu.utp.misontic2022.c2.enumeraciones.Color;
+
 public class Coche extends Vehiculo {
+    private Integer numRuedas;
 
-    private Integer cilindrada;
+    public Coche(){ 
+        super();       
+    }
 
-
-    //#region Constructor
-    public Coche(){}
-
-    public Coche(String color,Integer numSerie,Integer cilindrada) {
+    public Coche(Color color,Integer numSerie, Integer numRuedas){ 
         super(color,numSerie);
-        this.cilindrada=cilindrada;
+        this.numRuedas = numRuedas;
     }
-    //#endregion
 
+    public Integer getNumRuedas(){
+        return numRuedas;
+    }
 
-    //#region Getter and Setter
-    public Integer getCilindrada() {
-        return this.cilindrada;
+    public void setNumRuedas(Integer numRuedas){
+        this.numRuedas = numRuedas;
     }
-   
-    public void setCilindrada(Integer cilindrada) {
-        this.cilindrada = cilindrada;
-    }
-    //#endregion
-    
+
 }
-
-

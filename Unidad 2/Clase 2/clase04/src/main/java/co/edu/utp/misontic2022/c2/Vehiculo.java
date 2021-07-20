@@ -1,23 +1,32 @@
 package co.edu.utp.misontic2022.c2;
 
+import co.edu.utp.misontic2022.c2.enumeraciones.Color;
+
 public class Vehiculo {
 
-    String color;
-    Integer numSerie;
+    private Color color;
+    private Integer numSerie=0;
    
     // #region Constructor
     public Vehiculo() {
     }
 
-    public Vehiculo(String color, int numSerie) {
+    public Vehiculo(Color color, Integer numSerie) {
         this.color = color;
         this.numSerie = numSerie;
     }
     // #endregion
 
     //#region Getter and Setter
-    public String getColor() {
+    public Color getColor() {
         return this.color;
+    }
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setNumSerie(Integer numSerie) {
+        this.numSerie = numSerie;
     }
     
     public Integer getNumSerie() {

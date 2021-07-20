@@ -6,7 +6,7 @@ public class MiPrimerClase {
 
     private Integer contador;
 
-    //#region Constructor
+    // #region Constructor
     public MiPrimerClase() {
         this.contador = 0;
     }
@@ -14,9 +14,9 @@ public class MiPrimerClase {
     public MiPrimerClase(int contador) {
         this.contador = contador;
     }
-    //#endregion
+    // #endregion
 
-    //#region Getter and Setter
+    // #region Getter and Setter
     public Integer getContador() {
         return this.contador;
     }
@@ -24,5 +24,5 @@ public class MiPrimerClase {
     public void setContador(int contador) {
         this.contador = contador;
     }
-    //#endregion
+    // #endregion
 }
