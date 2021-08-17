@@ -24,6 +24,9 @@ public class BookShop {
             System.out.println("2. Busqueda de libro");
             System.out.println("3. Consulta de existencias");
             System.out.println("4. Venta de libros");
+            System.out.println("5. Agregar  libros");
+            System.out.println("6. Modificar libros");
+            System.out.println("7. Eliminar libros");
             System.out.println("0. Salir");
             System.out.println("==========================================");
             System.out.print("Ingrese su opción: ");
@@ -45,6 +48,16 @@ public class BookShop {
                     case 4:
                         venta();
                         break;
+                    case 5:
+                        agregarLibros();
+                        break;
+                    case 6:
+                        //modificarLibros();
+                        break;
+                    case 7:
+                       // eliminarLibros();
+                        break;
+
                     default:
                         System.err.println("Opción no válida");
                 }
@@ -53,6 +66,8 @@ public class BookShop {
             }
         }
     }
+
+
 
     private void listadoLibros() {
         System.out.println("");
@@ -146,4 +161,41 @@ public class BookShop {
             System.out.println("Código de error: " + ex.getErrorCode());
         }
     }
+    private void agregarLibros() throws IOException  {
+        System.out.println("");
+        System.out.println("==========================================");
+        System.out.println(" Agregar libros");
+        System.out.println("==========================================");
+
+
+        try (var manager=new DBManager()){
+            System.out.print("Ingrese el ISBN del libro");
+            var isbn=input.readLine();
+
+            System.out.print("Ingrese el TITULO del libro");
+            var title=input.readLine();
+
+            System.out.print("Ingrese el AÑO del libro");
+            var year =Integer.valueOf(input.readLine());
+
+            Book sBook= manager.save(title,isbn,year);
+            if (sBook!=null){
+                System.out.println("Libro Guardado Correctamente");
+            }else{
+                System.out.println("Libro No Guardado");
+            }
+
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Excepción SQL: " + ex.getMessage());
+            System.out.println("Estado SQL: " + ex.getSQLState());
+            System.out.println("Código de error: " + ex.getErrorCode());
+        }
+
+
+    }
+
+
+
 }

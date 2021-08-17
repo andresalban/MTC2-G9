@@ -2,6 +2,7 @@ package co.edu.utp.misiontic2022.c2.bookshops;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DBManager implements AutoCloseable {
@@ -20,8 +21,18 @@ public class DBManager implements AutoCloseable {
             File fileDB = new File(DATABASE_LOCATION);
             if (fileDB.length() == 0) {
                 var stmt = this.connection.createStatement();
-                stmt.execute("CREATE TABLE books(id INTEGER  NOT NULL PRIMARY KEY ,tittle VARCHAR(20) NOT NULL ,isbn " +
-                        "varchar(10) NOT NULL ,years INTEGER (4) NOT NULL );");
+                stmt.execute("CREATE TABLE books(id INTEGER  NOT NULL PRIMARY KEY ,title VARCHAR(100) NOT NULL ,isbn" +
+                        " varchar(10) NOT NULL ,years INTEGER (4) NOT NULL );");
+
+                String sqlDatos = "INSERT INTO books (id,title,isbn,years) Values(?,?,?,?)";
+                PreparedStatement PreStmt = this.connection.prepareStatement(sqlDatos);
+
+                PreStmt.setInt(1, 1);
+                PreStmt.setString(2, "El coronel no tiene quien le escriba");
+                PreStmt.setString(3, "0101");
+                PreStmt.setInt(4, 1976);
+
+                PreStmt.executeUpdate();
 
 
             }
@@ -61,7 +72,39 @@ public class DBManager implements AutoCloseable {
      */
     public int getStock(int bookId) throws SQLException {
         // TODO: program this method
-        return 0;
+        var cantidad = 0;
+        connect();
+
+        //Connection connection =this.connection;
+        PreparedStatement PreStmt = null;
+        ResultSet rs = null;
+        try {
+            String sqlStock = "SELECT COUNT(id)as cantidad FROM books WHERE id=? LIMIT 1";
+            PreStmt = connection.prepareStatement(sqlStock);
+            PreStmt.setInt(1, bookId);
+            rs = PreStmt.executeQuery();
+
+            if (rs.next()) {
+                cantidad = rs.getInt(1);
+
+            }
+
+
+        } catch (SQLException e) {
+            System.out.println("" + e);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
+        }
+
+        return cantidad;
     }
 
     /**
@@ -74,14 +117,17 @@ public class DBManager implements AutoCloseable {
     public Book searchBook(String isbn) throws SQLException {
         // TODO: program this method
         Book book = null;
-        Connection connection = this.connection;
+
+        connect();
+        //Connection connection = this.connection;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            var sql = "SELECT id,tittle,isb,years FROM books WHERE isbn=?";
+            String sql = "SELECT id,title,isbn,years FROM books WHERE isbn=?";
             stmt = connection.prepareStatement(sql);
             stmt.setString(1, isbn);
+
             rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -91,20 +137,22 @@ public class DBManager implements AutoCloseable {
                         rs.getString("isbn"),
                         rs.getInt("years")
                 );
+
             }
 
         } catch (SQLException e) {
             System.out.println("ERROR SQL- " + e);
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
             if (rs != null) {
                 rs.close();
             }
             if (stmt != null) {
                 stmt.close();
             }
+            if (connection != null) {
+                connection.close();
+            }
+
         }
         return book;
     }
@@ -133,7 +181,16 @@ public class DBManager implements AutoCloseable {
      */
     public boolean sellBook(int book, int units) throws SQLException {
         // TODO: program this method
-        return false;
+        boolean validarLibro = false;
+        var unidades = this.getStock(book);
+
+        if (unidades >= units) {
+            validarLibro = true;
+        } else {
+            validarLibro = false;
+        }
+
+        return validarLibro;
     }
 
     /**
@@ -144,10 +201,121 @@ public class DBManager implements AutoCloseable {
      */
     public List<Book> listBooks() throws SQLException {
         // TODO: program this method
+        var listaBook = new ArrayList<Book>();
+        connect();
+        //Connection connection = this.connection;
+        PreparedStatement PreStmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sqlLista = "SELECT id, title,isbn,years FROM books";
+            PreStmt = connection.prepareStatement(sqlLista);
+            rs = PreStmt.executeQuery();
+
+            while (rs.next()) {
+                var myBook = new Book(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("isbn"),
+                        rs.getInt("years")
+                );
+                listaBook.add(myBook);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("ErrorDB-:" + e);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+        }
+
+
         //return new ArrayList<Book>();
-    return null;
+        return listaBook;
+    }
+
+
+    public Book save(String title, String isbn, int year) throws SQLException {
+        Book myBook = null;
+        var nuevoConsecutivo = consecutivo();
+
+        connect();
+        PreparedStatement PreStmt = null;
+        try {
+            myBook = new Book(
+                    nuevoConsecutivo,
+                    title,
+                    isbn,
+                    year
+            );
+
+            String sqlCrearLibro = "INSERT INTO books (id,title,isbn,years) Values(?,?,?,?)";
+            PreStmt = connection.prepareStatement(sqlCrearLibro);
+
+            PreStmt.setInt(1, nuevoConsecutivo);
+            PreStmt.setString(2, myBook.getTitle());
+            PreStmt.setString(3, myBook.getIsbn());
+            PreStmt.setInt(4, myBook.getYear());
+
+            PreStmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("" + e);
+        } finally {
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return myBook;
+    }
+
+    public int consecutivo() throws SQLException {
+        var maximo = 1;
+        connect();
+        PreparedStatement PreStmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT MAX(ID) AS mayor FROM books LIMIT 1; ";
+            PreStmt = connection.prepareStatement(sql);
+
+            rs = PreStmt.executeQuery();
+
+            if (rs.next()) {
+                maximo += rs.getInt("mayor");
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("EEE" + e);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+
+
+        }
+
+        return maximo;
     }
 }
+
+
 
 
 

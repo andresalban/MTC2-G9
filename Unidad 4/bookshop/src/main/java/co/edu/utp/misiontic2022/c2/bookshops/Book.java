@@ -48,5 +48,8 @@ public class Book {
         this.id = id;
     }
 
-
+    @Override
+    public String toString() {
+        return isbn + " " + title + " (" + year + ")";
+    }
 }
