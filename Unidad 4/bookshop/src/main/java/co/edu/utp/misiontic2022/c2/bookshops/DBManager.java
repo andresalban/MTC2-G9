@@ -236,11 +236,8 @@ public class DBManager implements AutoCloseable {
             }
         }
 
-
-        //return new ArrayList<Book>();
         return listaBook;
     }
-
 
     public Book save(String title, String isbn, int year) throws SQLException {
         Book myBook = null;
@@ -307,12 +304,102 @@ public class DBManager implements AutoCloseable {
             if (connection != null) {
                 connection.close();
             }
-
-
         }
 
         return maximo;
     }
+
+    public Book update(int id, String title, String isbn, int year) throws SQLException {
+        Book myBook = null;
+
+        connect();
+        PreparedStatement PreStmt = null;
+
+        try {
+            myBook = new Book(
+                    id,
+                    title,
+                    isbn,
+                    year
+            );
+            String sqlUpdate = "UPDATE books SET title=?,isbn=?,years=? WHERE id=?";
+            PreStmt = connection.prepareStatement(sqlUpdate);
+
+            PreStmt.setString(1, myBook.getTitle());
+            PreStmt.setString(2, myBook.getIsbn());
+            PreStmt.setInt(3, myBook.getYear());
+            PreStmt.setInt(4, myBook.getId());
+
+            PreStmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("ERROR--" + e);
+        } finally {
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return myBook;
+    }
+
+    public boolean delete(int id) throws SQLException {
+        boolean resultado =false;
+
+        connect();
+        PreparedStatement PreStmt = null;
+
+        try {
+            String sqlDelete = "DELETE FROM books WHERE id=?";
+            PreStmt = connection.prepareStatement(sqlDelete);
+            PreStmt.setInt(1, id);
+
+            PreStmt.executeUpdate();
+            resultado =true;
+
+        } catch (SQLException e) {
+            System.out.println("ERROR--" + e);
+        } finally {
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        return resultado;
+    }
+
+    public String deleteString(int id) throws SQLException {
+        String resultado = "";
+
+        connect();
+        PreparedStatement PreStmt = null;
+
+        try {
+            String sqlDelete = "DELETE FROM books WHERE id=?";
+            PreStmt = connection.prepareStatement(sqlDelete);
+            PreStmt.setInt(1, id);
+
+            PreStmt.executeUpdate();
+            resultado ="Libro eliminado correctamente";
+
+        } catch (SQLException e) {
+            System.out.println("ERROR--" + e);
+        } finally {
+            if (PreStmt != null) {
+                PreStmt.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        return resultado;
+    }
+
 }
 
 
