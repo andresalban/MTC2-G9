@@ -1,6 +1,7 @@
 package co.edu.utp.misiontic2022.c2;
 
 import javax.persistence.Persistence;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -17,7 +18,8 @@ public class App {
         //createPersona();
         //mostrarFind();
         //removePersona();
-        consultaJPQL();
+        //consultaJPQL();
+        consultaAPI();
 
     }
 
@@ -98,5 +100,30 @@ public class App {
             em.close();
         }
     }
+
+    public static void consultaAPI(){
+        System.out.println("consultaAPI");
+        var emf = Persistence.createEntityManagerFactory("clase12-pu");
+        var em = emf.createEntityManager();
+
+        try{
+
+            var cb = em.getCriteriaBuilder();
+            var cq = cb.createQuery(Persona.class);
+            var rootEntry = cq.from(Persona.class);
+            var all = cq.select(rootEntry);
+
+            var query=em.createQuery(all);
+            List<Persona> personas = query.getResultList();
+            personas.forEach(System.out::println);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            em.close();
+        }
+
+    }
+
 
 }
