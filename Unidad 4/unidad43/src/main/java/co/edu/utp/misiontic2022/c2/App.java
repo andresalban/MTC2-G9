@@ -1,6 +1,9 @@
 package co.edu.utp.misiontic2022.c2;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -14,12 +17,16 @@ public class App {
         System.out.println("Inicio...");
 
         disableLogging();
-
+        System.out.println("+++++++");
         //createPersona();
+
+
         //mostrarFind();
         //removePersona();
-        //consultaJPQL();
+        consultaJPQL();
+        System.out.println("+++++++");
         consultaAPI();
+
 
     }
 
@@ -35,7 +42,6 @@ public class App {
         Persona persona = new Persona("Andres", 28);
         Persona persona2 = new Persona("felipe", 30);
         Persona persona3 = new Persona("Juan", 55);
-
 
         var emf = Persistence.createEntityManagerFactory("clase12-pu");
         var em = emf.createEntityManager();
@@ -88,12 +94,12 @@ public class App {
 
     public static void consultaJPQL() {
         System.out.println("consultaJPQL");
-        var emf = Persistence.createEntityManagerFactory("clase12-pu");
-        var em = emf.createEntityManager();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("clase12-pu");
+        EntityManager em = emf.createEntityManager();
         try {
-            var query = em.createQuery("SELECT p FROM Persona p ", Persona.class);
-            var persona = query.getResultList();
-            persona.forEach(System.out::println);
+            var query = em.createQuery("SELECT p.nombre FROM Persona p ");
+            var personas = query.getResultList();
+            personas.forEach(System.out::println);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -122,8 +128,6 @@ public class App {
         }finally {
             em.close();
         }
-
     }
-
 
 }
